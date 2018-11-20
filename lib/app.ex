@@ -18,11 +18,12 @@ defmodule App do
     import Supervisor.Spec, warn: false
 
     children = [
+      supervisor(App.Repo, []),
       worker(App.Poller, []),
       worker(App.Matcher, [])
     ]
 
     opts = [strategy: :one_for_one, name: App.Supervisor]
-    Supervisor.start_link children, opts
+    Supervisor.start_link(children, opts)
   end
 end

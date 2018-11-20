@@ -13,7 +13,7 @@ defmodule App.Matcher do
   end
 
   def handle_cast(message, state) do
-    Commands.match_message message
+    Commands.match_message(message)
 
     {:noreply, state}
   end

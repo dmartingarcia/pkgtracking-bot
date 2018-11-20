@@ -2,29 +2,18 @@ defmodule App.Commands do
   use App.Router
   use App.Commander
 
-  alias App.Commands.Outside
+  alias App.Commands.{Trackings}
 
-  # You can create commands in the format `/command` by
-  # using the macro `command "command"`.
-  command ["hello", "hi"] do
-    # Logger module injected from App.Commander
-    Logger.log :info, "Command /hello or /hi"
+  # See also: https://hexdocs.pm/nadia/Nadia.html
 
-    # You can use almost any function from the Nadia core without
-    # having to specify the current chat ID as you can see below.
-    # For example, `Nadia.send_message/3` takes as first argument
-    # the ID of the chat you want to send this message. Using the
-    # macro `send_message/2` defined at App.Commander, it is
-    # injected the proper ID at the function. Go take a look.
-    #
-    # See also: https://hexdocs.pm/nadia/Nadia.html
-    send_message "Hello World!"
+  command ["hello", "hi", "start"] do
+    Logger.log(:info, "Command /hello or /hi")
+
+    send_message "Hello mate!"
   end
 
-  # You may split code to other modules using the syntax
-  # "Module, :function" instead od "do..end"
-  command "outside", Outside, :outside
-  # For the sake of this tutorial, I'll define everything here
+  command "tracking_list", Trackings, :list
+  command "add_tracking", Trackings, :add
 
   command "question" do
     Logger.log :info, "Command /question"
