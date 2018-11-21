@@ -15,12 +15,21 @@ defmodule App.PostalService.Correos do
   end
 
   defp parse_event(event_body) do
-    %{
-      event_date: Meeseeks.one(event_body, css("fecha")) |> Meeseeks.text,
-      message: Meeseeks.one(event_body, css("descripcionweb")) |> Meeseeks.text,
+    message = Meeseeks.one(event_body, css("descripcionweb")) |> Meeseeks.text
+    is_ending = String.contains?(String.downcase(message), "entregado")
+
+    %App.Event{
+      event_date: parse_date(Meeseeks.one(event_body, css("fecha")) |> Meeseeks.text),
+      message: message,
       internal_code: Meeseeks.one(event_body, css("codigoevento")) |> Meeseeks.text,
-      location: Meeseeks.one(event_body, css("provincia")) |> Meeseeks.text
+      location: Meeseeks.one(event_body, css("provincia")) |> Meeseeks.text,
+      ending_event: is_ending
     }
+  end
+
+  defp parse_date(date_string) do
+    date_string
+    |> String.split("/") |> Enum.reverse |> Enum.join("-") |> Date.from_iso8601!
   end
 
   defp url do

@@ -3,7 +3,7 @@ services:
   app:
     build:
       context: .
-    command: mix
+    command: mix server
     environment:
       - MIX_ENV=dev
       - PG_HOST=postgres
