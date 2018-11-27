@@ -5,6 +5,7 @@ defmodule App.Event do
   schema "events" do
     field :event_date, :date
     field :message, :string
+    field :detailed_message, :string
     field :internal_code, :string
     field :location, :string
     field :ending_event, :boolean
@@ -17,6 +18,6 @@ defmodule App.Event do
 
   def changeset(event, params \\ %{}) do
     event
-    |> cast(params, [:event_date, :message, :internal_code, :location, :ending_event, :source])
+    |> cast(params, [:event_date, :message, :detailed_message, :internal_code, :location, :ending_event, :source])
   end
 end

@@ -1,6 +1,7 @@
 defmodule App.Commands.Trackings do
   use App.Commander
   import Ecto.Query
+  alias App.PostalService.{Correos, CorreosExpress}
   alias App.{Repo, Event, TrackingCode}
 
   #/update
@@ -32,7 +33,9 @@ defmodule App.Commands.Trackings do
 
   defp update_tracking_code(update, tracking) do
     Repo.transaction(fn ->
-      events = App.PostalService.Correos.obtain_events(tracking.code)
+
+      services = service_list |> Enum.filter(fn(service) ->  service.valid_tracking?(tracking.code) end)
+      events = Enum.map(services, fn(service) -> service.obtain_events(tracking.code) end) |> List.flatten
       new_events = select_and_create_new_events(events, tracking)
       is_finished = !(Enum.filter(events, fn(event) -> event.ending_event end) |> Enum.empty?)
       if is_finished do
@@ -44,6 +47,10 @@ defmodule App.Commands.Trackings do
         send_message(message, parse_mode: :markdown)
       end
     end)
+  end
+
+  defp service_list do
+    [Correos, CorreosExpress]
   end
 
   defp set_as_finished(tracking) do
@@ -66,7 +73,6 @@ defmodule App.Commands.Trackings do
 
     Enum.filter(events,
       fn(event) ->
-        IO.inspect tracking
         case Repo.get_by(Event, message: event.message, tracking_code_id: tracking.id) do
           nil ->
             event = Map.merge(event, %{tracking_code_id: tracking.id})

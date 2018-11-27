@@ -14,13 +14,20 @@ defmodule App.PostalService.Correos do
     end
   end
 
+  def valid_tracking?(tracking_code) do
+    Regex.match?(~r/PQ[a-zA-Z0-9]{21}/, tracking_code) || #PQ5KJZ0488259250113004P
+      Regex.match?(~r/UX[a-zA-Z0-9]{21}/, tracking_code) || # UX599A0440698810113004A
+      Regex.match?(~r/R[YP]{1}[a-zA-Z0-9]{11}/, tracking_code) || # RY388817948CN // RP096465723CN
+      Regex.match?(~r/PK[a-zA-Z0-9]{21}/, tracking_code) # PK41PY0401445130113005Y
+  end
+
   defp parse_event(event_body) do
     message = Meeseeks.one(event_body, css("descripcionweb")) |> Meeseeks.text
     is_ending = String.contains?(String.downcase(message), "entregado")
 
     %App.Event{
       event_date: parse_date(Meeseeks.one(event_body, css("fecha")) |> Meeseeks.text),
-      message: message,
+      message: message |> String.capitalize,
       internal_code: Meeseeks.one(event_body, css("codigoevento")) |> Meeseeks.text,
       location: Meeseeks.one(event_body, css("provincia")) |> Meeseeks.text,
       ending_event: is_ending,
