@@ -23,7 +23,8 @@ defmodule App.PostalService.Correos do
       message: message,
       internal_code: Meeseeks.one(event_body, css("codigoevento")) |> Meeseeks.text,
       location: Meeseeks.one(event_body, css("provincia")) |> Meeseeks.text,
-      ending_event: is_ending
+      ending_event: is_ending,
+      source: "Correos"
     }
   end
 

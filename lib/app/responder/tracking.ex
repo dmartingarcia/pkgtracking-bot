@@ -1,6 +1,6 @@
 defmodule App.Responder.Tracking do
   import Ecto.Query
-  alias App.{Repo, TrackingCode}
+  alias App.{Repo, TrackingCode, Event}
 
   def list(chat_id) do
     trackings = TrackingCode
@@ -11,22 +11,24 @@ defmodule App.Responder.Tracking do
   end
 
   def tracking_markdown(tracking, events \\ []) do
-    IO.inspect events
-    events = if events |> Enum.empty? do
+    events = if Enum.empty?(events) do
       tracking.events
+    else
+      events
     end
-    IO.inspect events
 
-    info = "📦 *Tracking:* #{tracking.code}\n"
+    info = "📦 *Tracking:* `#{tracking.code}`\n"
+
+    info = if tracking.ended do
+      "✅"<> info
+    else
+      info
+    end
+
     info_events = Enum.map(events, fn(event) ->
-      ["*" <> event.message <> "*", event.event_date] |> Enum.join(" # ")
+      ["*" <> event.message <> "*", event.event_date, "(" <> event.source <> ")"] |> Enum.join(" # ")
     end) |> Enum.join("\n")
-
-    IO.puts info
-    IO.puts info_events
 
     info <> info_events <> "\n\n"
   end
-
-
 end

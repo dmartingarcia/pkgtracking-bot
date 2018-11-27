@@ -8,6 +8,7 @@ defmodule App.Event do
     field :internal_code, :string
     field :location, :string
     field :ending_event, :boolean
+    field :source, :string
 
     belongs_to :tracking_code, App.TrackingCode
 
@@ -16,6 +17,6 @@ defmodule App.Event do
 
   def changeset(event, params \\ %{}) do
     event
-    |> cast(params, [:event_date, :message, :internal_code, :location, :ending_event])
+    |> cast(params, [:event_date, :message, :internal_code, :location, :ending_event, :source])
   end
 end

@@ -1,40 +1,53 @@
 defmodule App.Commands.Trackings do
-  # Notice that here we just `use` Commander. Router is only
-  # used to map commands to actions. It's best to keep routing
-  # only in App.Commands file. Commander gives us helpful
-  # macros to deal with Nadia functions.
   use App.Commander
+  import Ecto.Query
   alias App.{Repo, Event, TrackingCode}
-  # Functions must have as first parameter a variable named
-  # update. Otherwise, macros (like `send_message`) will not
-  # work as expected.
+
+  #/update
+  def update(update) do
+    chat_id = get_chat_id()
+    trackings = TrackingCode
+    |> where(chat_id: ^chat_id)
+    |> where([t], is_nil(t.ended))
+    |> or_where([t], t.ended == false)
+    |> Repo.all
+    |> Repo.preload([:events])
+    |> Enum.map(fn(tracking) -> update_tracking_code(update, tracking) end)
+  end
 
   #/tracking_list
   def list(update) do
-    send_message(App.Responder.Tracking.list(get_chat_id()), parse_mode: :markdown)
+    message = App.Responder.Tracking.list(get_chat_id())
+    {:ok, _} = send_message(message, parse_mode: :markdown)
   end
 
   #/add_tracking $code
   def add(update) do
     code = String.split(update.message.text, " ") |> List.last
+
     tracking = find_or_create_tracking(code, get_chat_id())
 
+    update_tracking_code(update, tracking)
+  end
+
+  defp update_tracking_code(update, tracking) do
     Repo.transaction(fn ->
-      events = App.PostalService.Correos.obtain_events(code)
+      events = App.PostalService.Correos.obtain_events(tracking.code)
       new_events = select_and_create_new_events(events, tracking)
       is_finished = !(Enum.filter(events, fn(event) -> event.ending_event end) |> Enum.empty?)
       if is_finished do
         set_as_finished(tracking)
       end
-      message = App.Responder.Tracking.tracking_markdown(tracking, new_events)
-      send_message(message, parse_mode: :markdown)
+
+      if new_events |> Enum.any? do
+        message = App.Responder.Tracking.tracking_markdown(tracking, new_events)
+        send_message(message, parse_mode: :markdown)
+      end
     end)
   end
 
   defp set_as_finished(tracking) do
     changeset = TrackingCode.changeset(tracking, %{ended: true})
-    IO.inspect changeset
-
     Repo.update!(changeset)
   end
 

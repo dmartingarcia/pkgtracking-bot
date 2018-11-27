@@ -6,39 +6,27 @@ defmodule App.Commands do
 
   # See also: https://hexdocs.pm/nadia/Nadia.html
 
-  command ["hello", "hi", "start"] do
-    Logger.log(:info, "Command /hello or /hi")
-
-    send_message "Hello mate!"
-  end
-
   command "tracking_list", Trackings, :list
+  command "update", Trackings, :update
   command "add_tracking", Trackings, :add
 
-  command "question" do
-    Logger.log :info, "Command /question"
+  command "start" do
+    Logger.log :info, "Command /start"
 
-    {:ok, _} = send_message "What's the best JoJo?",
+    {:ok, _} = send_message "Selecciona tu idioma / Select your language",
       # Nadia.Model is aliased from App.Commander
       #
-      # See also: https://hexdocs.pm/nadia/Nadia.Model.InlineKeyboardMarkup.html
+      # See also: https://hexdocs.pm/nadia/Nadia.Model.InlineKeyboardMarkup.htm
       reply_markup: %Model.InlineKeyboardMarkup{
         inline_keyboard: [
           [
             %{
-              callback_data: "/choose joseph",
-              text: "Joseph Joestar",
+              callback_data: "/language es",
+              text: "🇪🇸",
             },
             %{
-              callback_data: "/choose joseph-of-course",
-              text: "Joseph Joestar of course",
-            },
-          ],
-          [
-            # Read about fallbacks in the end of the file
-            %{
-              callback_data: "/typo-:p",
-              text: "Other",
+              callback_data: "/language en",
+              text: "🇬🇧",
             },
           ]
         ]
@@ -46,61 +34,15 @@ defmodule App.Commands do
   end
 
   # You can create command interfaces for callback querys using this macro.
-  callback_query_command "choose" do
-    Logger.log :info, "Callback Query Command /choose"
+  callback_query_command "language" do
+    Logger.log :info, "Callback Query Command /language"
 
     case update.callback_query.data do
-      "/choose joseph" ->
-        answer_callback_query text: "Indeed you have good taste."
-      "/choose joseph-of-course" ->
-        answer_callback_query text: "I can't agree more."
+      "/language es" ->
+        answer_callback_query text: "Perfecto!!"
+      "/language en" ->
+        answer_callback_query text: "Perfect!!"
     end
-  end
-
-  # You may also want make commands when in inline mode.
-  # Be sure to enable inline mode first: https://core.telegram.org/bots/inline
-  # Try by typping "@your_bot_name /what-is something"
-  inline_query_command "what-is" do
-    Logger.log :info, "Inline Query Command /what-is"
-
-    :ok = answer_inline_query [
-      %InlineQueryResult.Article{
-        id: "1",
-        title: "10 Hours What is Love Jim Carrey HD",
-        thumb_url: "https://img.youtube.com/vi/ER97mPHhgtM/3.jpg",
-        description: "Have a great time",
-        input_message_content: %{
-          message_text: "https://www.youtube.com/watch?v=ER97mPHhgtM",
-        }
-      }
-    ]
-  end
-
-  # Advanced Stuff
-  #
-  # Now that you already know basically how this boilerplate works let me
-  # introduce you to a cool feature that happens under the hood.
-  #
-  # If you are used to telegram bot API, you should know that there's more
-  # than one path to fetch the current message chat ID so you could answer it.
-  # With that in mind and backed upon the neat macro system and the cool
-  # pattern matching of Elixir, this boilerplate automatically detectes whether
-  # the current message is a `inline_query`, `callback_query` or a plain chat
-  # `message` and handles the current case of the Nadia method you're trying to
-  # use.
-  #
-  # If you search for `defmacro send_message` at App.Commander, you'll see an
-  # example of what I'm talking about. It just works! It basically means:
-  # When you are with a callback query message, when you use `send_message` it
-  # will know exatcly where to find it's chat ID. Same goes for the other kinds.
-
-  inline_query_command "foo" do
-    Logger.log :info, "Inline Query Command /foo"
-    # Where do you think the message will go for?
-    # If you answered that it goes to the user private chat with this bot,
-    # you're right. Since inline querys can't receive nothing other than
-    # Nadia.InlineQueryResult models. Telegram bot API could be tricky.
-    send_message "This came from an inline query"
   end
 
   # Fallbacks
