@@ -7,7 +7,7 @@ defmodule App.Repo.Migrations.CreateEvents do
       add :message, :string, null: false
       add :internal_code, :string, null: false
       add :location, :string
-      add :ending_event, :boolean
+      add :ending_event, :boolean, default: false, null: false
 
       add :tracking_code_id, references(:tracking_codes), null: false
 
