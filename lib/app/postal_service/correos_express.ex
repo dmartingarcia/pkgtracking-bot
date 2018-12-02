@@ -20,12 +20,19 @@ defmodule App.PostalService.CorreosExpress do
   defp parse_event(event_body) do
     [message | detailed_message] = Meeseeks.one(event_body, css("td:nth-child(3)")) |> Meeseeks.text |> String.split(".", parts: 2)
 
-    is_ending = String.contains?(String.downcase(message), "entregado")
+    detailed_message = case detailed_message do
+                         [] ->
+                           nil
+                         [msg] ->
+                           msg |> String.capitalize
+                       end
 
+    is_ending = String.contains?(String.downcase(message), "entregado")
+    IO.inspect detailed_message
     %App.Event{
       event_date: parse_date(Meeseeks.one(event_body, css("td:nth-child(1)")) |> Meeseeks.text),
-      detailed_message: detailed_message |> String.capitalize,
-      message: message |> String.capitalize,
+      detailed_message: detailed_message,
+      message: String.capitalize(message),
       internal_code: message,
       location: Meeseeks.one(event_body, css("td:nth-child(2)")) |> Meeseeks.text,
       ending_event: is_ending,
