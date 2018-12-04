@@ -3,7 +3,8 @@ defmodule App.PostalService.CorreosExpress do
 
   def obtain_events(tracking_code) do
     url = String.replace(url(),"&TRACKING_CODE", tracking_code)
-    {:ok, %{body: body}} = HTTPoison.get(url)
+    IO.puts url
+    {:ok, %{body: body}} = HTTPoison.get(url, [], [timeout: 50_000, recv_timeout: 50_000])
 
     case body |> Meeseeks.parse |> Meeseeks.fetch_all(css(".tracking table tbody tr")) do
       {:ok, results} ->
@@ -14,7 +15,7 @@ defmodule App.PostalService.CorreosExpress do
   end
 
   def valid_tracking?(tracking_code) do
-    Regex.match?(~r/[0-9]{9}/, tracking_code)
+    Regex.match?(~r/^[0-9]{9}$/, tracking_code)
   end
 
   defp parse_event(event_body) do

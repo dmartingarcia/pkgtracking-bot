@@ -15,9 +15,9 @@ defmodule App.PostalService.Correos do
   end
 
   def valid_tracking?(tracking_code) do
-    Regex.match?(~r/PQ[a-zA-Z0-9]{21}/, tracking_code) || #PQ5KJZ0488259250113004P
-      Regex.match?(~r/UX[a-zA-Z0-9]{21}/, tracking_code) || # UX599A0440698810113004A
-      Regex.match?(~r/R[YP]{1}[a-zA-Z0-9]{11}/, tracking_code) || # RY388817948CN // RP096465723CN
+    Regex.match?(~r/PQ[A-Z0-9]{21}/, tracking_code) || #PQ5KJZ0488259250113004P
+      Regex.match?(~r/UX[A-Z0-9]{21}/, tracking_code) || # UX599A0440698810113004A
+      Regex.match?(~r/R[A-Z]{1}[A-Z0-9]{11}/, tracking_code) || # RY388817948CN // RP096465723CN
       Regex.match?(~r/PK[a-zA-Z0-9]{21}/, tracking_code) # PK41PY0401445130113005Y
   end
 
