@@ -3,8 +3,9 @@ defmodule App.Responder.Tracking do
   alias App.{Repo, TrackingCode, Event}
 
   def list(chat_id) do
-    trackings = TrackingCode
+    TrackingCode
     |> where(chat_id: ^chat_id)
+    |> order_by([t], t.ended)
     |> Repo.all
     |> Repo.preload([:events])
     |> Enum.map(&__MODULE__.tracking_markdown/1)

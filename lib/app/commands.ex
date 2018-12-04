@@ -7,7 +7,6 @@ defmodule App.Commands do
   # See also: https://hexdocs.pm/nadia/Nadia.html
 
   command "tracking_list", Trackings, :list
-  command "update", Trackings, :update
   command "add_tracking", Trackings, :add
 
   command "start" do

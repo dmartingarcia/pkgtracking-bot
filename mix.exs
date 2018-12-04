@@ -21,7 +21,7 @@ defmodule App.Mixfile do
   end
 
   defp applications(:dev), do: applications(:all) ++ [:remix]
-  defp applications(_all), do: [:postgrex, :logger, :nadia, :ecto_sql, :httpoison]
+  defp applications(_all), do: [:postgrex, :logger, :nadia, :ecto_sql, :httpoison, :timex]
 
   defp deps do
     [{:nadia, "~> 0.4.1"},
@@ -30,6 +30,8 @@ defmodule App.Mixfile do
      {:exvcr, "~> 0.10", only: :test},
      {:httpoison, "~> 1.1"},
      {:meeseeks, "~> 0.10.1"},
+     {:poison, "~> 3.1"},
+     {:timex, "~> 3.0"},
      {:remix, "~> 0.0.1", only: :dev}]
   end
 

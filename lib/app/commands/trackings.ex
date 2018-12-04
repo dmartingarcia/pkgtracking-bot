@@ -4,18 +4,6 @@ defmodule App.Commands.Trackings do
   alias App.PostalService.{Correos, CorreosExpress}
   alias App.{Repo, Event, TrackingCode}
 
-  #/update
-  def update(update) do
-    chat_id = get_chat_id()
-    trackings = TrackingCode
-    |> where(chat_id: ^chat_id)
-    |> where([t], is_nil(t.ended))
-    |> or_where([t], t.ended == false)
-    |> Repo.all
-    |> Repo.preload([:events])
-    |> Enum.map(fn(tracking) -> update_tracking_code(update, tracking) end)
-  end
-
   #/tracking_list
   def list(update) do
     message = App.Responder.Tracking.list(get_chat_id())
