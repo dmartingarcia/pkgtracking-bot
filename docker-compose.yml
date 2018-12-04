@@ -12,6 +12,8 @@ services:
       - postgres
     volumes:
       - .:/app
+    links:
+      - postgres
     stdin_open: true
     tty: true
 
@@ -19,6 +21,6 @@ services:
     image: postgres:9.6.3
     environment:
       - POSTGRES_USER=postgres
-      - POSTGRES_DB=trackingbot_dev
+      - POSTGRES_DB=pkgtracking_dev
     ports:
       - 5432:5432

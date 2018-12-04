@@ -11,7 +11,7 @@ config :app, App.Repo,
   adapter: Ecto.Adapters.Postgres,
   username: System.get_env("PG_USERNAME"),
   password: System.get_env("PG_USERNAME"),
-  database: "sense_dev",
+  database: "pkgtracking_dev",
   hostname: System.get_env("PG_HOST"),
   pool_size: 10
 
