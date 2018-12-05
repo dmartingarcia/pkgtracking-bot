@@ -3,12 +3,17 @@ defmodule App.Responder.Tracking do
   alias App.{Repo, TrackingCode, Event}
 
   def list(chat_id) do
-    TrackingCode
+    tracking_codes = TrackingCode
     |> where(chat_id: ^chat_id)
     |> order_by([t], t.ended)
     |> Repo.all
     |> Repo.preload([:events])
-    |> Enum.map(&__MODULE__.tracking_markdown/1)
+
+    
+    tracking_codes |> Enum.chunk_every(5) |> Enum.map(fn(tracking_group) ->
+      message = tracking_group |> Enum.map(&__MODULE__.tracking_markdown/1)
+      {:ok, _} = Nadia.send_message(chat_id, message, [parse_mode: :markdown])
+    end)
   end
 
   def tracking_markdown(tracking, events \\ []) do
@@ -26,7 +31,7 @@ defmodule App.Responder.Tracking do
       info
     end
 
-    info_events = Enum.map(events, fn(event) ->
+    info_events = Enum.sort_by(events, fn(event) -> event.event_date end) |> Enum.map(fn(event) ->
       ["*" <> event.message <> "*", event.event_date, "(" <> event.source <> ")"] |> Enum.join(" # ")
     end) |> Enum.join("\n")
 
