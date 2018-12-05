@@ -15,7 +15,8 @@ defmodule App.PostalService.Chinapost do
   end
 
   def valid_tracking?(tracking_code) do
-    Regex.match?(~r/R[A-Z]{1}[0-9]{9}CN/, tracking_code) # RY388817948CN // RP096465723CN
+    Regex.match?(~r/R[A-Z]{1}[0-9]{9}CN/, tracking_code) || # RY388817948CN // RP096465723CN
+      Regex.match?(~r/LM[A-Z0-9]{11}/, tracking_code) # LM388817948CN
   end
 
   defp parse_event(event_body) do

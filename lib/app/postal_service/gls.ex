@@ -16,7 +16,7 @@ defmodule App.PostalService.Gls do
 
   defp parse_event(event) do
     message = event["evtDscr"]
-    is_ending = String.contains?(String.downcase(message), "notdefined")
+    is_ending = String.contains?(String.downcase(message), "envío entregado")
     
     location_string = Enum.join([event["address"]["city"], event["address"]["countryName"]], ", ")
     
