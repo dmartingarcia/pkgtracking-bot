@@ -2,9 +2,9 @@ defmodule App.TrackingCodeUpdater do
   use GenServer
   require Logger
   import Ecto.Query
-  alias App.PostalService.{Correos, CorreosExpress, Sky56, Gls, Chinapost, SingaporePost}
+  alias App.PostalService.{Correos, CorreosExpress, Sky56, Gls, Chinapost, SingaporePost, Cainiao, SeventeenTrack}
   alias App.{Repo, Event, TrackingCode}
-  
+
   def start_link do
     Logger.log(:info, "Started TrackingCodeUpdater")
     GenServer.start_link(__MODULE__, %{})
@@ -47,23 +47,23 @@ defmodule App.TrackingCodeUpdater do
       if is_finished do
         set_as_finished(tracking)
       end
-      
+
       if new_events |> Enum.any? do
         message = App.Responder.Tracking.tracking_markdown(tracking, new_events)
         Nadia.send_message(tracking.chat_id, message, [parse_mode: :markdown])
       end
     end)
   end
-  
+
   defp service_list do
-    [Correos, CorreosExpress, Sky56, Gls, Chinapost, SingaporePost]
+    [Correos, CorreosExpress, Sky56, Gls, Chinapost, SingaporePost, Cainiao, SeventeenTrack]
   end
-  
+
   defp set_as_finished(tracking) do
     changeset = TrackingCode.changeset(tracking, %{ended: true})
     Repo.update!(changeset)
   end
-  
+
   defp select_and_create_new_events(events, tracking) do
     new_events = []
 
