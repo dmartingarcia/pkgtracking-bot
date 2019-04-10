@@ -18,9 +18,9 @@ services:
     tty: true
 
   postgres:
-    image: postgres:9.6.3
+    image: postgres:11
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_DB=pkgtracking_dev
     ports:
-      - 5432:5432
+      - 5432
