@@ -46,7 +46,7 @@ defmodule App.PostalService.Correos do
   end
 
   defp header do
-    [{"Content-Type", "application/soap+xml; charset=utf-8"}]
+    [{"Content-Type", "application/soap+xml; charset=utf-8"}, timeout: 50_000, recv_timeout: 50_000]
   end
 
   defp body(tracking_code) do
