@@ -9,7 +9,7 @@ defmodule App.Responder.Tracking do
     |> Repo.all
     |> Repo.preload([:events])
 
-    
+
     tracking_codes |> Enum.chunk_every(5) |> Enum.map(fn(tracking_group) ->
       message = tracking_group |> Enum.map(&__MODULE__.tracking_markdown/1)
       {:ok, _} = Nadia.send_message(chat_id, message, [parse_mode: :markdown])
@@ -32,7 +32,7 @@ defmodule App.Responder.Tracking do
     end
 
     info_events = Enum.sort_by(events, fn(event) -> event.event_date end) |> Enum.map(fn(event) ->
-      ["*" <> event.message <> "*", event.event_date, "(" <> event.source <> ")"] |> Enum.join(" # ")
+      ["*" <> event.message <> "*", event.detailed_message, event.event_date, "(" <> event.source <> ")"] |> Enum.join(" # ")
     end) |> Enum.join("\n")
 
     info <> info_events <> "\n\n"
