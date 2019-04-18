@@ -8,6 +8,7 @@ defmodule App.TrackingCode do
     field :ended, :boolean
     field :last_check, :utc_datetime
     field :name
+    field :deleted, :boolean
 
     has_many :events, App.Event
 
@@ -16,6 +17,6 @@ defmodule App.TrackingCode do
 
   def changeset(tracking_code, params \\ %{}) do
     tracking_code
-    |> cast(params, [:code, :chat_id, :ended, :last_check, :name])
+    |> cast(params, [:code, :chat_id, :ended, :last_check, :name, :deleted])
   end
 end

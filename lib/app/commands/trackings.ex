@@ -16,7 +16,10 @@ defmodule App.Commands.Trackings do
 
     tracking = find_or_create_tracking(code, get_chat_id())
 
-    App.TrackingCodeUpdater.update_tracking_code(tracking)
+  #/delete_ended
+  def delete_ended(update) do
+    App.Responder.Tracking.delete_ended(get_chat_id())
+    {:ok, _} = send_message("*Ended trackings deleted!* :rocket:", parse_mode: :markdown)
   end
 
   defp find_or_create_tracking(code, chat_id) do

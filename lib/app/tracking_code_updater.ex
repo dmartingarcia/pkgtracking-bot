@@ -31,8 +31,7 @@ defmodule App.TrackingCodeUpdater do
     Logger.log(:info, "Updating tracking codes")
 
     TrackingCode
-    |> where([t], is_nil(t.ended))
-    |> or_where([t], t.ended == false)
+    |> where([t], not(t.ended))
     |> Repo.all
     |> Repo.preload([:events])
     |> Enum.map(fn(tracking) -> update_tracking_code(tracking) end)

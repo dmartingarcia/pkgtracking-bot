@@ -2,9 +2,16 @@ defmodule App.Responder.Tracking do
   import Ecto.Query
   alias App.{Repo, TrackingCode, Event}
 
+  def delete_ended(chat_id) do
+    ended_tracking_codes = TrackingCode
+    |> where([t], t.chat_id == ^chat_id and t.ended and not(t.deleted))
+
+    Repo.update_all(from(t in TrackingCode, join: s in subquery(ended_tracking_codes), on: s.id == t.id), set: [deleted: true])
+  end
+
   def list(chat_id) do
     tracking_codes = TrackingCode
-    |> where(chat_id: ^chat_id)
+    |> where([t], t.chat_id == ^chat_id and not(t.deleted))
     |> order_by([t], t.ended)
     |> Repo.all
     |> Repo.preload([:events])

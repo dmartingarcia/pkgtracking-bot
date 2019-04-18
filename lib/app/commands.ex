@@ -8,6 +8,7 @@ defmodule App.Commands do
 
   command "tracking_list", Trackings, :list
   command "add_tracking", Trackings, :add
+  command "delete_ended", Trackings, :delete_ended
 
   command "start" do
     Logger.log :info, "Command /start"
