@@ -17,7 +17,7 @@ defmodule App.Responder.Tracking do
     |> Repo.preload([:events])
 
 
-    tracking_codes |> Enum.chunk_every(5) |> Enum.map(fn(tracking_group) ->
+    tracking_codes |> Enum.chunk_every(1) |> Enum.map(fn(tracking_group) ->
       message = tracking_group |> Enum.map(&__MODULE__.tracking_markdown/1)
       {:ok, _} = Nadia.send_message(chat_id, message, [parse_mode: :markdown])
     end)

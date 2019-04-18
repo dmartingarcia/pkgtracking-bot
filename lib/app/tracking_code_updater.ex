@@ -22,9 +22,9 @@ defmodule App.TrackingCodeUpdater do
     schedule_work()
     {:noreply, state}
   end
-  
+
   defp schedule_work do
-    Process.send_after(self(), :work, 600 * 1000)
+    Process.send_after(self(), :work, 1000 * 60 * 5)
   end
 
   defp update_trackings do
