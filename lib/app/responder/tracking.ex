@@ -23,6 +23,12 @@ defmodule App.Responder.Tracking do
     end)
   end
 
+  def element(chat_id, tracking) do
+    tracking =  tracking |> Repo.preload([:events])
+    message = "*Tracking code in use:*\n\n" <> tracking_markdown(tracking)
+    {:ok, _} = Nadia.send_message(chat_id, message, [parse_mode: :markdown])
+  end
+
   def tracking_markdown(tracking, events \\ []) do
     events = if Enum.empty?(events) do
       tracking.events

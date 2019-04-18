@@ -14,7 +14,13 @@ defmodule App.Commands.Trackings do
   def add(update) do
     code = String.split(update.message.text, " ") |> List.last
 
-    tracking = find_or_create_tracking(code, get_chat_id())
+    case(find_or_create_tracking(code, get_chat_id())) do
+      {:created, tracking} ->
+        App.TrackingCodeUpdater.update_tracking_code(tracking)
+      {:exists, tracking} ->
+        App.Responder.Tracking.element(get_chat_id(), tracking)
+    end
+  end
 
   #/delete_ended
   def delete_ended(update) do
@@ -26,9 +32,9 @@ defmodule App.Commands.Trackings do
     case Repo.get_by(TrackingCode, code: code, chat_id: chat_id) do
       nil ->
         tracking = %TrackingCode{code: code, chat_id: chat_id}
-        Repo.insert!(tracking)
+        {:created, Repo.insert!(tracking)}
       result ->
-        result
+        {:exists, result}
     end
   end
 end
