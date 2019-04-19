@@ -2,7 +2,7 @@ defmodule App.TrackingCodeUpdater do
   use GenServer
   require Logger
   import Ecto.Query
-  alias App.PostalService.{Correos, CorreosExpress, Sky56, Gls, Chinapost, SingaporePost, Cainiao, SeventeenTrack}
+  alias App.PostalService.{Correos, CorreosExpress, Sky56, Gls, Chinapost, SingaporePost, Cainiao}
   alias App.{Repo, Event, TrackingCode}
 
   def start_link do
@@ -55,7 +55,7 @@ defmodule App.TrackingCodeUpdater do
   end
 
   defp service_list do
-    [Correos, CorreosExpress, Sky56, Gls, Chinapost, SingaporePost, Cainiao, SeventeenTrack]
+    [Correos, CorreosExpress, Sky56, Gls, Chinapost, SingaporePost, Cainiao]
   end
 
   defp set_as_finished(tracking) do
