@@ -14,7 +14,7 @@ defmodule App.Responder.Tracking do
     |> where([t], t.chat_id == ^chat_id and not(t.deleted))
     |> order_by([t], t.ended)
     |> Repo.all
-    |> Repo.preload([:events])
+    |> Repo.preload([events: (from e in Event, order_by: e.event_date)])
 
 
     tracking_codes |> Enum.chunk_every(1) |> Enum.map(fn(tracking_group) ->
