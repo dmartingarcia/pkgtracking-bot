@@ -1,0 +1,35 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    service: app
+  name: app
+  namespace: pkgtracker
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        service: app
+    spec:
+      containers:
+      - env:
+        - name: MIX_ENV
+          value: prod
+        - name: PG_HOST
+          value: postgres
+        - name: PG_USERNAME
+          value: postgres
+        - name: TELEGRAM_TOKEN
+          value: $TELEGRAM_TOKEN
+        - name: TELEGRAM_NAME
+          value: pkgtracker
+        image: basestylo/pkgtracker:1571676899
+        command: ["mix", "server"]
+        name: app
+        ports:
+          - containerPort: 4000
+        resources:
+          requests:
+            cpu: "10m"
+      restartPolicy: Always

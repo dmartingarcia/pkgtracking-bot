@@ -1,0 +1,38 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    service: postgres
+  name: postgres
+  namespace: pkgtracker
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        service: postgres
+    spec:
+      containers:
+      - env:
+        - name: POSTGRES_DB
+          value: pkgtracker_prod
+        - name: POSTGRES_USER
+          value: postgres
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pg_data
+        image: postgres:11
+        name: postgres
+        ports:
+         - containerPort: 5432
+        volumeMounts:
+          - name: postgres-persistent-storage
+            mountPath: /var/lib/postgresql/data
+        resources:
+          requests:
+            cpu: "50m"
+      volumes:
+        - name: postgres-persistent-storage
+          persistentVolumeClaim:
+            claimName: postgres-pv-claim
+      restartPolicy: Always
+status: {}

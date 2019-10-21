@@ -5,6 +5,8 @@ services:
       context: .
     command: mix server
     environment:
+      - TELEGRAM_NAME=pkgtracker
+      - TELEGRAM_TOKEN=
       - MIX_ENV=dev
       - PG_HOST=postgres
       - PG_USERNAME=postgres
@@ -21,6 +23,6 @@ services:
     image: postgres:11
     environment:
       - POSTGRES_USER=postgres
-      - POSTGRES_DB=pkgtracking_dev
+      - POSTGRES_DB=pkgtracker_dev
     ports:
       - 5432
