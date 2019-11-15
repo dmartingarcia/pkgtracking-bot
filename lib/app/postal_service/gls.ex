@@ -5,9 +5,13 @@ defmodule App.PostalService.Gls do
     {:ok, %{body: body}} = HTTPoison.get(url, [], [timeout: 50_000, recv_timeout: 50_000])
     IO.puts url
     result = Poison.Parser.parse!(body, %{})
-    result = result["tuStatus"] |> Enum.at(0)
-
-    result["history"] |> Enum.map(&parse_event/1)
+    result = case result["tuStatus"] do
+               nil ->
+                 []
+               status ->
+                 result = Enum.at(status, 0)
+                 result["history"] |> Enum.map(&parse_event/1)
+             end
   end
 
   def valid_tracking?(tracking_code) do
@@ -17,9 +21,9 @@ defmodule App.PostalService.Gls do
   defp parse_event(event) do
     message = event["evtDscr"]
     is_ending = String.contains?(String.downcase(message), "envío entregado")
-    
+
     location_string = Enum.join([event["address"]["city"], event["address"]["countryName"]], ", ")
-    
+
     %App.Event{
       event_date: parse_date(event["date"]),
       message: message |> String.capitalize,

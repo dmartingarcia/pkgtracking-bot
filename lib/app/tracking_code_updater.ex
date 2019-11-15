@@ -38,20 +38,25 @@ defmodule App.TrackingCodeUpdater do
   end
 
   def update_tracking_code(tracking) do
-    services = service_list |> Enum.filter(fn(service) ->  service.valid_tracking?(tracking.code) end)
-    events = Enum.map(services, fn(service) -> service.obtain_events(tracking.code) end) |> List.flatten
-    Repo.transaction(fn ->
-      new_events = select_and_create_new_events(events, tracking)
-      is_finished = !(Enum.filter(events, fn(event) -> event.ending_event end) |> Enum.empty?)
-      if is_finished do
-        set_as_finished(tracking)
-      end
+    try do
+      services = service_list |> Enum.filter(fn(service) ->  service.valid_tracking?(tracking.code) end)
+      events = Enum.map(services, fn(service) -> service.obtain_events(tracking.code) end) |> List.flatten
+      Repo.transaction(fn ->
+        new_events = select_and_create_new_events(events, tracking)
+        is_finished = !(Enum.filter(events, fn(event) -> event.ending_event end) |> Enum.empty?)
+        if is_finished do
+          set_as_finished(tracking)
+        end
 
-      if new_events |> Enum.any? do
-        message = App.Responder.Tracking.tracking_markdown(tracking, new_events)
-        Nadia.send_message(tracking.chat_id, message, [parse_mode: :markdown])
-      end
-    end)
+        if new_events |> Enum.any? do
+          message = App.Responder.Tracking.tracking_markdown(tracking, new_events)
+          Nadia.send_message(tracking.chat_id, message, [parse_mode: :markdown])
+        end
+      end)
+    rescue
+      exception ->
+        Sentry.capture_exception(exception, [stacktrace: __STACKTRACE__])
+    end
   end
 
   defp service_list do
