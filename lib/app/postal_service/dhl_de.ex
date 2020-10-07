@@ -1,4 +1,4 @@
-defmodule App.PostalService.Dhl do
+defmodule App.PostalService.DhlDe do
   def obtain_events(tracking_code) do
     url = String.replace(url(),"&TRACKING_CODE", tracking_code)
     IO.puts "DHL for #{tracking_code} -> #{url}"
