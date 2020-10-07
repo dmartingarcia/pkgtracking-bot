@@ -2,7 +2,7 @@ defmodule App.TrackingCodeUpdater do
   use GenServer
   require Logger
   import Ecto.Query
-  alias App.PostalService.{Correos, CorreosExpress, Sky56, Gls, Chinapost, SingaporePost, Cainiao}
+  alias App.PostalService.{Correos, CorreosExpress, Sky56, Gls, Chinapost, SingaporePost, Cainiao, Dhl}
   alias App.{Repo, Event, TrackingCode}
 
   def start_link do
@@ -39,7 +39,7 @@ defmodule App.TrackingCodeUpdater do
 
   def update_tracking_code(tracking) do
     try do
-      services = service_list |> Enum.filter(fn(service) ->  service.valid_tracking?(tracking.code) end)
+      services = service_list() |> Enum.filter(fn(service) ->  service.valid_tracking?(tracking.code) end)
       events = Enum.map(services, fn(service) -> service.obtain_events(tracking.code) end) |> List.flatten
       Repo.transaction(fn ->
         new_events = select_and_create_new_events(events, tracking)
@@ -55,12 +55,13 @@ defmodule App.TrackingCodeUpdater do
       end)
     rescue
       exception ->
+        IO.inspect(exception)
         Sentry.capture_exception(exception, [stacktrace: __STACKTRACE__])
     end
   end
 
   defp service_list do
-    [Correos, CorreosExpress, Sky56, Gls, Chinapost, SingaporePost, Cainiao]
+    [Correos, CorreosExpress, Sky56, Gls, Chinapost, SingaporePost, Cainiao, Dhl]
   end
 
   defp set_as_finished(tracking) do
@@ -69,8 +70,6 @@ defmodule App.TrackingCodeUpdater do
   end
 
   defp select_and_create_new_events(events, tracking) do
-    new_events = []
-
     Enum.filter(events,
       fn(event) ->
         case Repo.get_by(Event, message: event.message, tracking_code_id: tracking.id) do
@@ -79,11 +78,10 @@ defmodule App.TrackingCodeUpdater do
             Repo.insert!(event)
 
             true
-          result ->
+          _ ->
             false
         end
       end
     )
   end
-
 end
