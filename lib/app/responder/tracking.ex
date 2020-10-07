@@ -45,7 +45,7 @@ defmodule App.Responder.Tracking do
     end
 
     info_events = Enum.sort_by(events, fn(event) -> event.event_date end) |> Enum.map(fn(event) ->
-      ["*" <> event.message <> "*", event.detailed_message, event.event_date, "(" <> event.source <> ")"] |> Enum.join(" # ")
+      ["*" <> event.message <> "*", event.detailed_message, event.location, event.event_date, "(" <> event.source <> ")"] |>  Enum.reject(&(nil?(&1))) |> Enum.join(" # ")
     end) |> Enum.join("\n")
 
     info <> info_events <> "\n\n"
