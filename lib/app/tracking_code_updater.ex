@@ -24,7 +24,7 @@ defmodule App.TrackingCodeUpdater do
   end
 
   defp schedule_work do
-    Process.send_after(self(), :work, 1000 * 60 * 5)
+    Process.send_after(self(), :work, 1000 * 60 * 30)
   end
 
   defp update_trackings do
