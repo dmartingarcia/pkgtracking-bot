@@ -1,7 +1,6 @@
 defmodule App.PostalService.DhlEs do
   def obtain_events(tracking_code) do
     url = String.replace(url(),"&TRACKING_CODE", tracking_code)
-    IO.puts "DHL for #{tracking_code} -> #{url}"
 
     {:ok, %{body: body}} = HTTPoison.get(url, [], [timeout: 50_000, recv_timeout: 50_000])
 
@@ -30,13 +29,14 @@ defmodule App.PostalService.DhlEs do
   defp parse_event(event) do
     message = Map.fetch!(event, "Descripcion") |> String.trim
     is_ending = String.downcase(message) |> String.contains?("entregado")
+    location = parse_location(event)
 
     %App.Event{
       event_date: parse_date(event),
       detailed_message: nil,
       message: message,
-      internal_code: message,
-      location: parse_location(event),
+      internal_code: message <> location,
+      location: location,
       ending_event: is_ending,
       source: "DHL"
     }
@@ -50,15 +50,17 @@ defmodule App.PostalService.DhlEs do
   end
 
   defp parse_date(event) do
-    hour = Map.fetch!("Hora")
+    date = event
+    |> Map.fetch!("Fecha")
     |> String.split("/")
     |> Enum.reverse
     |> Enum.join("-")
 
-    day = Map.fetch!("Fecha")
+    hour = Map.fetch!(event, "Hora")
+    date_string = date <> "T" <> hour <> ":00Z"
 
-    date_string = day <> "T" <> hour
-    date_string |> DateTime.from_iso8601!
+    {_, date, _} = DateTime.from_iso8601(date_string)
+    date |> DateTime.to_date
   end
 
   defp url do

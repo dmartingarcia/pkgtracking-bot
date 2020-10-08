@@ -1,7 +1,6 @@
 defmodule App.PostalService.DhlDe do
   def obtain_events(tracking_code) do
     url = String.replace(url(),"&TRACKING_CODE", tracking_code)
-    IO.puts "DHL for #{tracking_code} -> #{url}"
 
     {:ok, %{body: body}} = HTTPoison.get(url, [], [timeout: 50_000, recv_timeout: 50_000])
 

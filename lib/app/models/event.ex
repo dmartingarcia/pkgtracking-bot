@@ -19,5 +19,6 @@ defmodule App.Event do
   def changeset(event, params \\ %{}) do
     event
     |> cast(params, [:event_date, :message, :detailed_message, :internal_code, :location, :ending_event, :source])
+    |> validate_required([:message, :internal_code])
   end
 end

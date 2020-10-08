@@ -72,7 +72,7 @@ defmodule App.TrackingCodeUpdater do
   defp select_and_create_new_events(events, tracking) do
     Enum.filter(events,
       fn(event) ->
-        case Repo.get_by(Event, message: event.message, tracking_code_id: tracking.id) do
+        case Repo.get_by(Event, internal_code: event.internal_code, tracking_code_id: tracking.id) do
           nil ->
             event = Map.merge(event, %{tracking_code_id: tracking.id})
             Repo.insert!(event)

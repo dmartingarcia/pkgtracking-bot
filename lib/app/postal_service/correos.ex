@@ -18,7 +18,7 @@ defmodule App.PostalService.Correos do
     Regex.match?(~r/PQ[A-Z0-9]{21}/, tracking_code) || #PQ5KJZ0488259250113004P
       Regex.match?(~r/UX[A-Z0-9]{21}/, tracking_code) || # UX599A0440698810113004A
       Regex.match?(~r/[A-Z0-9]{11}CN/, tracking_code) || # ___________CN
-          Regex.match?(~r/[A-Z0-9]{11}SG/, tracking_code) || # ___________SG
+      Regex.match?(~r/[A-Z0-9]{11}SG/, tracking_code) || # ___________SG
       Regex.match?(~r/PK[a-zA-Z0-9]{21}/, tracking_code) # PK41PY0401445130113005Y
   end
 
