@@ -22,6 +22,7 @@ defmodule App.PostalService.DhlDe do
   end
 
   defp parse_body(body) do
+    IO.puts body
     body |> String.split("JSON.parse(\"") |> Enum.at(1) |> String.split("\"),") |> Enum.at(0) |> String.replace("\\", "") |> Poison.decode
   end
 

@@ -15,6 +15,6 @@ defmodule App.Repo.Migrations.CreateEvents do
     end
 
     create index(:events, [:ending_event])
-    create unique_index(:events, [:tracking_code_id, :message])
+    create unique_index(:events, [:tracking_code_id, :internal_code])
   end
 end
