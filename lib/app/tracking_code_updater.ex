@@ -55,7 +55,14 @@ defmodule App.TrackingCodeUpdater do
       end)
     rescue
       exception ->
+        master_telegram_chat_id = 102026333
+
         IO.inspect(exception)
+        IO.inspect(Exception.format_stacktrace(__STACKTRACE__))
+
+        Nadia.send_message(master_telegram_chat_id, inspect(exception))
+        Nadia.send_message(master_telegram_chat_id, Exception.format_stacktrace(__STACKTRACE__))
+
         Sentry.capture_exception(exception, [stacktrace: __STACKTRACE__])
     end
   end
