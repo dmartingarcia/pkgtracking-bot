@@ -6,6 +6,9 @@ defmodule App.PostalService.Cainiao do
 
     {:ok, %{body: body}} = HTTPoison.get(url, [], [timeout: 50_000, recv_timeout: 50_000])
 
+    master_telegram_chat_id = 102026333
+    Nadia.send_message(master_telegram_chat_id, inspect(body))
+
     case body |> Poison.decode! |> Map.fetch!("data") |> List.first |> Map.fetch!("section2") |> Map.fetch("detailList") do
       {:ok, results} ->
         results |> Enum.map(&parse_event/1)
